@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe 'Routing', type: :routing do
   describe 'Metrics' do
-    let(:p) { '/metrics' }
-    let(:c) { 'metrics#' }
+    let(:p) { '/api/v1/metrics' }
+    let(:c) { 'api/v1/metrics#' }
 
     it { is_expected.to route(:get, p).to "#{c}index" }
     it { is_expected.to route(:get, "#{p}/1").to "#{c}show", id: 1 }

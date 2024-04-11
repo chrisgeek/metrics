@@ -6,7 +6,7 @@ RSpec.describe 'Metrics', type: :request do
       @metric1 = create(:metric)
       @metric2 = create(:metric)
 
-      get '/metrics'
+      get '/api/v1/metrics'
     end
 
     it { expect(response).to have_http_status(:ok) }
@@ -22,7 +22,7 @@ RSpec.describe 'Metrics', type: :request do
         @metric1 = create(:metric)
         @metric2 = create(:metric, name: 'Humidity')
 
-        get "/metrics/#{@metric1.id}"
+        get "/api/v1/metrics/#{@metric1.id}"
       end
 
       it { expect(response).to have_http_status(:ok) }
@@ -32,7 +32,7 @@ RSpec.describe 'Metrics', type: :request do
     end
 
     context 'with invalid id' do
-      before { get '/metrics/0' }
+      before { get '/api/v1/metrics/0' }
 
       it { expect(response).to have_http_status(:not_found) }
     end
@@ -40,7 +40,7 @@ RSpec.describe 'Metrics', type: :request do
 
   describe 'POST /metrics' do
     let(:valid_params) { { name: 'Temperature', timestamp: 5.minutes.ago, value: 12.89 } }
-    let(:send_request_with_valid_params) { post '/metrics', params: { metric: valid_params } }
+    let(:send_request_with_valid_params) { post '/api/v1/metrics', params: { metric: valid_params } }
 
     context 'with valid parameters' do
       it { expect { send_request_with_valid_params }.to change(Metric, :count).by(1) }
@@ -55,7 +55,7 @@ RSpec.describe 'Metrics', type: :request do
       let(:invalid_params) { { metric: { name: 'Stock', timestamp: 3.minutes.ago, value: nil } } }
 
       it 'does not create a new metric' do
-        expect { post '/metrics', params: invalid_params }.to_not change(Metric, :count)
+        expect { post '/api/v1/metrics', params: invalid_params }.to_not change(Metric, :count)
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe 'Metrics', type: :request do
     let(:valid_attributes) do
         { name: 'Humidity', value: 98.76 }
     end
-    let(:send_request_with_valid_params) { put "/metrics/#{metric.id}", params: { metric: valid_attributes } }
+    let(:send_request_with_valid_params) { put "/api/v1/metrics/#{metric.id}", params: { metric: valid_attributes } }
 
     context 'with valid attributes' do
       before do
@@ -100,7 +100,7 @@ RSpec.describe 'Metrics', type: :request do
       end
 
       it 'does not update record' do
-        put "/metrics/#{metric.id}", params: { metric: invalid_attributes }
+        put "/api/v1/metrics/#{metric.id}", params: { metric: invalid_attributes }
         metric.reload
 
         expect(metric.name).not_to eq(invalid_attributes[:name])
@@ -116,7 +116,7 @@ RSpec.describe 'Metrics', type: :request do
       before do
         @metric = create(:metric)
 
-        delete "/metrics/#{@metric.id}"
+        delete "/api/v1/metrics/#{@metric.id}"
       end
 
       it { expect(response).to have_http_status(:no_content) }
@@ -124,7 +124,7 @@ RSpec.describe 'Metrics', type: :request do
     end
 
     context 'when the metric does not exist' do
-      before { delete '/metrics/0' }
+      before { delete '/api/v1/metrics/0' }
 
       it { expect(response).to have_http_status(:not_found) }
     end
@@ -134,14 +134,14 @@ RSpec.describe 'Metrics', type: :request do
     context 'when param is valid' do
       before do
         @metric = create(:metric, timestamp: Time.current.beginning_of_day)
-        get '/metrics/averages', params: { timeframe: 'minute' }
+        get '/api/v1/metrics/averages', params: { timeframe: 'minute' }
       end
 
       it { expect(response.body).to include(@metric.name) }
     end
 
     context 'when param is invalid' do
-      before { get '/metrics/averages', params: { timeframe: 'invalid' } }
+      before { get '/api/v1/metrics/averages', params: { timeframe: 'invalid' } }
 
       it { expect(response.body).to include('Invalid timeframe, must be either minute, hour or day') }
     end

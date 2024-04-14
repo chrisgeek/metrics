@@ -6,6 +6,8 @@ function NavBar(){
       <Link to='/'>View Metrics</Link> 
       {' | '}
       <Link to='/new'>New Metric</Link> 
+      {' | '}
+      <Link to='/metrics/averages'>Show Time Averages</Link>
     </nav>
   )
 }

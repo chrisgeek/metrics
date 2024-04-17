@@ -1,9 +1,12 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# Seed file, the seeded data can also be read from an external file
+
+metric_names = %w[stocks humidity temperature]
+timestamps = [DateTime.now, DateTime.now + 5.minutes, DateTime.now + 2.hours]
+values = (5.5..100).step(4.2).to_a.map { |i| i.round(2) }
+
+p 'Seeding Metrics Data'
+20.times do
+  Metric.create!(name: metric_names.sample, timestamp: timestamps.sample, value: values.sample)
+rescue ActiveRecord::RecordInvalid => e
+  p "Error creating metric: #{e.message}"
+end
